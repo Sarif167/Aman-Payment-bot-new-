@@ -1,0 +1,12 @@
+Pyrofork==2.3.48
+tgcrypto
+pytz
+aiohttp
+motor
+pymongo
+python-dotenv
+asyncio
+psutil
+aiofiles
+qrcode
+pillow
