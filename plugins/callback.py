@@ -1,26 +1,18 @@
-import re
-import asyncio
-import random  
+import asyncio, random, pytz
 from datetime import datetime, timedelta
-import pytz
 from pyrogram import Client, enums, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, Message
-from plugins.Command import process_trial
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from database.users_db import db  
 from Script import script
-from info import CHANNEL, SUPPORT, TRIAL_PIC, LOG_CHANNEL, SCREENSHOT, CHANNEL_LINK, CLAIM_REWARD_PIC, DECLINED_PIC, SUCCESSFULLY_PIC
+from info import (
+    CHANNEL, SUPPORT, LOG_CHANNEL, SCREENSHOT, 
+    CHANNEL_LINK_MOV, CHANNEL_LINK_INST, CLAIM_REWARD_PIC, 
+    DECLINED_PIC, SUCCESSFULLY_PIC
+)
 from utils import (
-    temp, 
-    FIXED_PRICES, 
-    FIXED_PRICES2,
-    FIXED_PRICES3, 
-    UPI_ID, 
-    NAME, 
-    CURRENCY, 
-    generate_qr,
-    get_seconds,
-    get_time_str,
-    payment_timer_task
+    temp, MOVIE_PRICES1, INSTAGRAM_PRICES1, MOVIE_PRICES2, 
+    INSTAGRAM_PRICES2, UPI_ID, NAME, generate_qr, 
+    get_seconds, payment_timer_task
 )
 
 @Client.on_callback_query()
@@ -32,469 +24,185 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.message.delete()
 
     elif data == "about":
-        buttons = [[InlineKeyboardButton('🏠 ʜᴏᴍᴇ', callback_data='start'),
-                    InlineKeyboardButton('✖️ ᴄʟᴏsᴇ', callback_data='close_data')]]
-        
-        caption_text = script.ABOUT_TXT.format(temp.B_NAME, temp.B_NAME)
-        
-        if query.message.photo:
-            await query.message.edit_caption(
-                caption=caption_text,
-                reply_markup=InlineKeyboardMarkup(buttons),
-                parse_mode=enums.ParseMode.HTML
-            )
-        else:
-            await query.message.edit_text(
-                text=caption_text,
-                reply_markup=InlineKeyboardMarkup(buttons),
-                parse_mode=enums.ParseMode.HTML
-            )
+        await query.message.edit_text(
+            text=script.ABOUT_TXT.format(temp.B_NAME, temp.B_NAME),
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('ʜᴏᴍᴇ', callback_data='start')]]),
+            parse_mode=enums.ParseMode.HTML
+        )
     
     elif data == "start":
-        state_data = await db.get_payment_state(user_id)
-        if state_data:
-            try:
-                await client.delete_messages(
-                    chat_id=query.message.chat.id, 
-                    message_ids=[state_data["photo_id"], state_data["text_id"]]
-                )
-            except:
-                pass
-            await db.del_payment_state(user_id)
-
-        user_data = await db.get_user(user_id) or {}
-
         buttons = [
-            
-            [InlineKeyboardButton('✨ ✨ ᴠɪᴇᴡ sᴜʙsᴄʀɪᴘᴛɪᴏɴ ᴘʟᴀɴs ✨ ✨', callback_data='subscription')],
-            [InlineKeyboardButton("ℹ️ ʜᴇʟᴘ", callback_data="help"),
-             InlineKeyboardButton("👨‍💻 ᴀʙᴏᴜᴛ", callback_data="about")]
+            [InlineKeyboardButton("ʙᴀᴄᴋᴜᴘ ᴄʜᴀɴɴᴇʟ", url=CHANNEL)],
+            [InlineKeyboardButton("ʜᴇʟᴘ", callback_data="help"), InlineKeyboardButton("ᴀʙᴏᴜᴛ", callback_data="about")]
         ]
-
-        caption_text = script.START_TXT.format(query.from_user.mention, temp.B_NAME)
-
-        if query.message.photo:
-            await query.message.edit_caption(
-                caption=caption_text,
-                reply_markup=InlineKeyboardMarkup(buttons),
-                parse_mode=enums.ParseMode.HTML
-            )
-        else:
-            await query.message.edit_text(
-                text=caption_text,
-                reply_markup=InlineKeyboardMarkup(buttons),
-                parse_mode=enums.ParseMode.HTML
-            )
-        
-    elif data == "help":
-        buttons = [[InlineKeyboardButton("📢 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇs", url="https://t.me/+Jo5HxFRcEENlMzNl"), InlineKeyboardButton("📜 ᴏᴡɴᴇʀ", url="https://t.me/premiumuseronly_Bot")],
-                   [InlineKeyboardButton('🏠 ʜᴏᴍᴇ', callback_data='start')]
-        ]
-        
-        if query.message.photo:
-            await query.message.edit_caption(
-                caption=script.HELP_TXT,
-                reply_markup=InlineKeyboardMarkup(buttons),
-                parse_mode=enums.ParseMode.HTML
-            )
-        else:
-            await query.message.edit_text(
-                text=script.HELP_TXT,
-                reply_markup=InlineKeyboardMarkup(buttons),
-                parse_mode=enums.ParseMode.HTML
-            )  
-
-    elif data == "claim_trial":
-        await query.answer("ᴘʀᴏᴄᴇssɪɴɢ ʏᴏᴜʀ ғʀᴇᴇ ᴛʀɪᴀʟ...", show_alert=False)
-        await query.message.delete()
-        await process_trial(client, query.message, query.from_user.id, query.from_user.first_name, query.from_user.mention)
-        
-    elif data == "subscription":
-        user_id = query.from_user.id
-        user_data = await db.get_user(user_id)
-        current_time = datetime.now()
-        
-        is_premium = False
-        if user_data:
-            expiry = user_data.get("expiry_time")
-            if expiry:
-                if expiry.tzinfo:
-                    expiry = expiry.replace(tzinfo=None)
-                if expiry > current_time:
-                    is_premium = True
-                    
-        if is_premium:
-            await query.answer("✨ Yᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ᴀ ᴘʀᴇᴍɪᴜᴍ ᴍᴇᴍʙᴇʀ!", show_alert=True)
-            
-            already_premium_text = (
-                "🌟 <b>Yᴏᴜ Aʟʀᴇᴀᴅʏ Pᴜʀᴄʜᴀꜱᴇᴅ Oᴜʀ Pʀᴇᴍɪᴜᴍ Sᴜʙꜱᴄʀɪᴘᴛɪᴏɴ!</b>\n\n"
-                "<i>Eɴᴊᴏʏ ʏᴏᴜʀ VIP ʙᴇɴᴇꜰɪᴛꜱ. Yᴏᴜ ᴄᴀɴ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴘʟᴀɴ ᴅᴇᴛᴀɪʟꜱ ᴜꜱɪɴɢ /myplan.</i>"
-            )
-            buttons = [[InlineKeyboardButton("🏠 Hᴏᴍᴇ", callback_data="start")]]
-            
-            return await query.message.edit_text(
-                text=already_premium_text,
-                reply_markup=InlineKeyboardMarkup(buttons),
-                parse_mode=enums.ParseMode.HTML
-            )
-
-        price_buttons = []
-        row = []
-        for i, price in enumerate(FIXED_PRICES, 1):
-            row.append(InlineKeyboardButton(f"💳 ₹{price}", callback_data=f"pay_{price}"))
-            if i % 3 == 0:
-                price_buttons.append(row)
-                row = []
-        if row: 
-            price_buttons.append(row)
-            
-        price_buttons.append([InlineKeyboardButton("🏠 Hᴏᴍᴇ", callback_data="start")])
-        
         await query.message.edit_text(
-            text=script.CHECK_TXT.format(query.from_user.mention),
-            reply_markup=InlineKeyboardMarkup(price_buttons),
+            text=script.START_TXT.format(query.from_user.mention, temp.B_NAME),
+            reply_markup=InlineKeyboardMarkup(buttons),
             parse_mode=enums.ParseMode.HTML
         )
         
+    elif data == "help":
+        buttons = [
+            [InlineKeyboardButton("ᴜᴘᴅᴀᴛᴇs", url="https://t.me/"), InlineKeyboardButton("ᴏᴡɴᴇʀ", url="https://t.me/")],
+            [InlineKeyboardButton('ʜᴏᴍᴇ', callback_data='start')]
+        ]
+        await query.message.edit_text(
+            text=script.HELP_TXT,
+            reply_markup=InlineKeyboardMarkup(buttons),
+            parse_mode=enums.ParseMode.HTML
+        )
+
+    elif data.startswith("pay_mov_") or data.startswith("pay_inst_"):
+        splited = data.split("_")
+        pay_type = splited[1]
+        amount = int(splited[2])
         
-    elif data.startswith("pay_"):
-        amount = int(data.split("_")[1])
-        user_id = query.from_user.id
-        
+        mapping = MOVIE_PRICES1 if pay_type == "mov" else INSTAGRAM_PRICES1
+        pay_name = "ᴍᴏᴠɪᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ" if pay_type == "mov" else "ɪɴsᴛᴀ/ᴠɪᴘ ᴘʀᴇᴍɪᴜᴍ"
+
         state_data = await db.get_payment_state(user_id)
         if state_data:
-            await query.answer("⚠️ Pʟᴇᴀꜱᴇ ᴄᴏᴍᴘʟᴇᴛᴇ ʏᴏᴜʀ ᴘʀᴇᴠɪᴏᴜꜱ ᴘᴀʏᴍᴇɴᴛ ᴏʀ ᴜꜱᴇ /cancel ᴛᴏ ꜱᴛᴏᴘ ɪᴛ.", show_alert=True)
-            return
-            
-        await query.answer("🔄 Gᴇɴᴇʀᴀᴛɪɴɢ QR Cᴏᴅᴇ...", show_alert=False)
+            return await query.answer("ᴘʟᴇᴀsᴇ ᴄᴏᴍᴘʟᴇᴛᴇ ʏᴏᴜʀ ᴘᴇɴᴅɪɴɢ ᴘᴀʏᴍᴇɴᴛ ғɪʀsᴛ!", show_alert=True)
 
-        mapping = FIXED_PRICES3
         if amount not in mapping:
-            return await client.send_message(
-                chat_id=query.message.chat.id, 
-                text="❌ <b>Iɴᴠᴀʟɪᴅ Aᴍᴏᴜɴᴛ!</b>", 
-                parse_mode=enums.ParseMode.HTML
-            )
+            return await query.answer("ɪɴᴠᴀʟɪᴅ ᴀᴍᴏᴜɴᴛ!", show_alert=True)
 
-        premium_duration = FIXED_PRICES2.get(amount, "1day")
-        duration_text = mapping[amount]
-        transaction_note = f"{amount} {duration_text}"
+        duration = mapping[amount]
+        await query.answer("ɢᴇɴᴇʀᴀᴛɪɴɢ ǫʀ ᴄᴏᴅᴇ...", show_alert=False)
 
-        upi_link = f"upi://pay?pa={UPI_ID}&pn={NAME}&am={amount}&cu={CURRENCY}&tr={user_id}&tn={transaction_note}"
+        upi_link = f"upi://pay?pa={UPI_ID}&pn={NAME}&am={amount}&cu=INR&tr={user_id}&tn=ᴘᴀʏ_{user_id}_{amount}"
         qr_image = generate_qr(upi_link)
-        
         await query.message.delete()
 
         sent_photo = await client.send_photo(
             chat_id=query.message.chat.id,
             photo=qr_image,  
-            caption=script.SCAN_TXT.format(amount, premium_duration),
-            reply_markup=None,
+            caption=script.SCAN_TXT.format(amount, pay_name, duration),
             parse_mode=enums.ParseMode.HTML 
         )
-
         sent_text = await client.send_message(
             chat_id=query.message.chat.id,
-            text="📸 <b>Sᴇɴᴅ ᴀ ꜱᴄʀᴇᴇɴꜱʜᴏᴛ ᴏꜰ ᴛʜᴇ ᴘᴀʏᴍᴇɴᴛ ꜰᴏʀ ᴠᴇʀɪꜰɪᴄᴀᴛɪᴏɴ.</b>\n\n<i>Uꜱᴇ /cancel ᴛᴏ ᴄᴀɴᴄᴇʟ ᴛʜᴇ ᴘʀᴏᴄᴇꜱꜱ.</i>",
+            text="Abhi payment ka screenshot bhejein ya /cancel use karein",
             parse_mode=enums.ParseMode.HTML
         )
+
+        log_text = f"🔔 ǫʀ ɢᴇɴᴇʀᴀᴛᴇᴅ\n\nᴜsᴇʀ: {query.from_user.mention}\nᴛʏᴘᴇ: {pay_name}\nᴀᴍᴏᴜɴᴛ: ₹{amount}"
+        await client.send_message(LOG_CHANNEL, text=log_text)
 
         await db.set_payment_state(user_id, {
-            "amount": amount,
-            "premium_duration": premium_duration,
-            "photo_id": sent_photo.id,
-            "text_id": sent_text.id,
-            "pay_type": "pay"
+            "amount": amount, "premium_duration": duration,
+            "photo_id": sent_photo.id, "text_id": sent_text.id, "pay_type": pay_type
         })
+        asyncio.create_task(payment_timer_task(client, user_id, query.message.chat.id, amount, pay_type, sent_photo.id, sent_text.id))
 
-        asyncio.create_task(
-            payment_timer_task(client, user_id, query.message.chat.id, amount, premium_duration, sent_photo.id, sent_text.id)
-        )
-        
     elif data.startswith("approve_"):
-        data_parts = data.split("_")
-        target_user_id = int(data_parts[1])
-        amount = int(data_parts[2])
-
-        await query.answer("Pʀᴏᴄᴇꜱꜱɪɴɢ Aᴘᴘʀᴏᴠᴀʟ...", show_alert=False)
+        _, target_id, amount, pay_type = data.split("_")
+        target_id, amount = int(target_id), int(amount)
         
-        premium_duration = FIXED_PRICES2.get(amount, "1day")
-        seconds = get_seconds(premium_duration)
+        await query.answer("ᴀᴘᴘʀᴏᴠɪɴɢ...", show_alert=False)
+        
+        if pay_type == "mov":
+            mapping, target_chat, cat_name, expiry_key = MOVIE_PRICES2, CHANNEL_LINK_MOV, "ᴍᴏᴠɪᴇ", "expiry_mov"
+        else:
+            mapping, target_chat, cat_name, expiry_key = INSTAGRAM_PRICES2, CHANNEL_LINK_INST, "ɪɴsᴛᴀ/ᴠɪᴘ", "expiry_inst"
+
+        duration = mapping.get(amount, "1day")
+        seconds = get_seconds(duration)
         
         try:
-            user = await client.get_users(target_user_id)
+            user = await client.get_users(target_id)
             mention = user.mention
-        except Exception:
-            mention = f"Uꜱᴇʀ <code>{target_user_id}</code>"
+        except: mention = f"ᴜsᴇʀ {target_id}"
             
-        now_dt = datetime.now(pytz.timezone("Asia/Kolkata"))
-        now_str = now_dt.strftime("%d-%m-%Y %I:%M:%S %p")
-            
-        user_data = await db.get_user(target_user_id) or {"id": target_user_id, "name": mention}
-        current_expiry = user_data.get("expiry_time")
-        current_time = datetime.now()
+        now = datetime.now()
+        user_data = await db.get_user(target_id) or {"id": target_id}
+        curr_exp = user_data.get(expiry_key)
         
-        if current_expiry and current_expiry.tzinfo:
-            current_expiry = current_expiry.replace(tzinfo=None)
+        if curr_exp and curr_exp.tzinfo: curr_exp = curr_exp.replace(tzinfo=None)
+        new_exp = (curr_exp if curr_exp and curr_exp > now else now) + timedelta(seconds=seconds)
             
-        if current_expiry and current_expiry > current_time:
-            new_expiry = current_expiry + timedelta(seconds=seconds)
-        else:
-            new_expiry = current_time + timedelta(seconds=seconds)
-            
-        user_data["expiry_time"] = new_expiry
+        user_data[expiry_key] = new_expiry = new_exp
         await db.update_user(user_data) 
         
-        tz = pytz.timezone("Asia/Kolkata")
-        expiry_str = new_expiry.astimezone(tz).strftime("%d-%m-%Y ᴀᴛ %I:%M:%S %p")
+        exp_str = new_expiry.replace(tzinfo=pytz.utc).astimezone(pytz.timezone("Asia/Kolkata")).strftime("%d-%m-%Y %I:%M %p")
         
-        try:
-            await db.payments.insert_one({
-                "user_id": target_user_id,
-                "name": mention,
-                "amount": amount,
-                "pay_type": "pay",
-                "date": now_str
-            })
-        except Exception:
-            pass
-
-        reward_ranges = {
-            15: (2, 5), 39: (5, 10), 75: (10, 15),
-            110: (15, 20), 199: (20, 30), 360: (30, 50),
-        }
-
         reward_points = 0
-        min_r, max_r = reward_ranges.get(amount, (0, 0))
-        if max_r > 0:
-            reward_points = random.randint(min_r, max_r)
-            try:
-                await db.rewards.update_one(
-                    {"user_id": target_user_id},
-                    {"$inc": {"coins": reward_points}},
-                    upsert=True
-                )
-            except Exception:
-                pass
+        if 1 <= amount <= 20: reward_points = random.randint(1, 8)
+        elif 21 <= amount <= 50: reward_points = random.randint(5, 10)
+        elif 51 <= amount <= 100: reward_points = random.randint(10, 15)
+        elif 101 <= amount <= 200: reward_points = random.randint(15, 30)
+        elif 201 <= amount <= 500: reward_points = random.randint(30, 80)
+        elif amount > 500: reward_points = random.randint(80, 120)
 
-        reward_text = f"\n\n🎁 Yᴏᴜ'ᴠᴇ ᴀʟꜱᴏ ᴇᴀʀɴᴇᴅ <b>{reward_points} Rᴇᴡᴀʀᴅ Pᴏɪɴᴛꜱ!</b>" if reward_points > 0 else ""
+        if reward_points > 0:
+            await db.rewards.update_one({"user_id": target_id}, {"$inc": {"coins": reward_points}}, upsert=True)
 
-        btn = None
         try:
-            invite_link = await client.create_chat_invite_link(
-                chat_id=CHANNEL_LINK,
-                member_limit=1,
-                expire_date=current_time + timedelta(minutes=5)
-            )
-            btn = InlineKeyboardMarkup([[InlineKeyboardButton("✨ Jᴏɪɴ VIP Cʜᴀɴɴᴇʟ ✨", url=invite_link.invite_link)]])
-        except Exception:
-            pass 
+            link = await client.create_chat_invite_link(chat_id=target_chat, member_limit=1, expire_date=now + timedelta(minutes=10))
+            btn = InlineKeyboardMarkup([[InlineKeyboardButton(f"ᴊᴏɪɴ {cat_name}", url=link.invite_link)]])
             
-        success_caption = (
-            f"🎉 <b>Pᴀʏᴍᴇɴᴛ Vᴇʀɪꜰɪᴇᴅ Sᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ!</b>\n\n"
-            f"👋 Hᴇʟʟᴏ {mention}, ʏᴏᴜʀ ᴘᴀʏᴍᴇɴᴛ ᴏꜰ <b>₹{amount}</b> ʜᴀꜱ ʙᴇᴇɴ ᴀᴘᴘʀᴏᴠᴇᴅ.\n\n"
-            f"📦 <b>Pʟᴀɴ:</b> <code>{premium_duration} Pʀᴇᴍɪᴜᴍ</code>\n"
-            f"📅 <b>Nᴇᴡ Exᴘɪʀʏ:</b> <code>{expiry_str}</code>\n"
-            f"👉 <i>/myplan</i>\n"
-            f"{reward_text}\n"
-            f"👉 <i>/myreward</i>\n\n"
-            f"⚠️ <b>Iᴍᴘᴏʀᴛᴀɴᴛ Wᴀʀɴɪɴɢ:</b>\n\n"
-            f"⚠️ <b>{invite_link.invite_link}</b>\n\n"
-            f"• Tʜɪꜱ ʟɪɴᴋ ᴡɪʟʟ ᴡᴏʀᴋ ꜰᴏʀ <b>1 ᴘᴇʀꜱᴏɴ ᴏɴʟʏ</b>.\n"
-            f"• Iᴛ ᴡɪʟʟ ꜱᴛʀɪᴄᴛʟʏ ᴇxᴘɪʀᴇ ɪɴ <b>5 ᴍɪɴᴜᴛᴇꜱ</b>."
-        )
+            cap = f"🎉 ᴘᴀʏᴍᴇɴᴛ ᴀᴘᴘʀᴏᴠᴇᴅ!\n\nᴀᴍᴏᴜɴᴛ: ₹{amount}\nᴄᴀᴛᴇɢᴏʀʏ: {cat_name}\nᴇxᴘɪʀʏ: {exp_str}\n\n🎁 ʀᴇᴡᴀʀᴅ: {reward_points} ᴘᴏɪɴᴛs"
+            await client.send_photo(chat_id=target_id, photo=SUCCESSFULLY_PIC, caption=cap, reply_markup=btn)
+        except: pass 
 
-        try:
-            await client.send_photo(
-                chat_id=target_user_id,
-                photo=SUCCESSFULLY_PIC,
-                caption=success_caption,
-                reply_markup=btn,
-                parse_mode=enums.ParseMode.HTML
-            )
-        except Exception:
-            pass 
-
-        current_caption = query.message.caption or ""
-        new_caption = (
-            current_caption + 
-            f"\n\n<b>Sᴛᴀᴛᴜꜱ:</b> ✅ Aᴘᴘʀᴏᴠᴇᴅ ʙʏ {query.from_user.mention}\n"
-            f"<b>Aᴄᴛɪᴏɴ Tᴀᴋᴇɴ:</b> Pʀᴇᴍɪᴜᴍ Aᴅᴅᴇᴅ\n"
-            f"💰 <b>Rᴇᴠᴇɴᴜᴇ Aᴅᴅᴇᴅ:</b> ₹{amount}\n"
-            f"🎁 <b>Rᴇᴡᴀʀᴅ Gɪᴠᴇɴ:</b> {reward_points} Cᴏɪɴꜱ"
-        )
-        
-        try:
-            await query.message.edit_caption(
-                caption=new_caption,
-                reply_markup=None, 
-                parse_mode=enums.ParseMode.HTML
-            )
-        except Exception:
-            pass
-
-        if query.message.photo:
-            try:
-                await client.send_photo(
-                    chat_id=SCREENSHOT,
-                    photo=query.message.photo.file_id,
-                    caption=f"🔥 <b>Pʀɪᴄᴇ:</b> ₹{amount}\n📅 <b>Dᴜʀᴀᴛɪᴏɴ:</b> {premium_duration}\n👤 <b>Aᴘᴘʀᴏᴠᴇᴅ Bʏ:</b> @premiumuseronly_Bot",
-                    reply_markup=InlineKeyboardMarkup([
-                        [InlineKeyboardButton("💠 Bᴜʏ Tᴏ Pʀᴇᴍɪᴜᴍ", url="https://t.me/SubscribtionRobotbot")],
-                        [InlineKeyboardButton("📝 Aɴʏ Qᴜᴇꜱᴛɪᴏɴꜱ", url="https://t.me/premiumuseronly_Bot")]
-                    ]),
-                    parse_mode=enums.ParseMode.HTML
-                )
-            except Exception:
-                pass
-
+        await query.message.edit_caption(caption=query.message.caption + f"\n\n✅ ᴀᴘᴘʀᴏᴠᴇᴅ | ₹{amount} | ʀᴇᴡᴀʀᴅ: {reward_points}", reply_markup=None)
 
     elif data.startswith("reject_"):
-        target_user_id = int(data.split("_")[1])
-        amount = int(data.split("_")[2])
-        premium_duration = FIXED_PRICES2.get(amount, "1day")
+        _, target_id, amount = data.split("_")
+        await query.answer("ʀᴇᴊᴇᴄᴛᴇᴅ!", show_alert=True)
         
-        await query.answer("Pᴀʏᴍᴇɴᴛ Rᴇᴊᴇᴄᴛᴇᴅ!", show_alert=False)
+        cap = f"❌ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴊᴇᴄᴛᴇᴅ!\n\nᴀᴍᴏᴜɴᴛ: ₹{amount}\nʀᴇᴀsᴏɴ: sᴄʀᴇᴇɴsʜᴏᴛ ɴᴏᴛ ᴠᴀʟɪᴅ"
+        try: await client.send_photo(chat_id=int(target_id), photo=DECLINED_PIC, caption=cap)
+        except: pass
+        await query.message.edit_caption(caption=query.message.caption + "\n\n❌ ʀᴇᴊᴇᴄᴛᴇᴅ", reply_markup=None)
 
-        reject_text = (
-            "❌ <b>Sᴜʙꜱᴄʀɪᴘᴛɪᴏɴ RᴇQᴜᴇꜱᴛ Dᴇᴄʟɪɴᴇᴅ Bʏ Aᴅᴍɪɴ!</b>\n\n"
-            "📄 <b>Sᴜʙꜱᴄʀɪᴘᴛɪᴏɴ Dᴇᴛᴀɪʟꜱ:</b>\n"
-            f"💰 <b>Pʀɪᴄᴇ:</b> <code>₹{amount}</code>\n"
-            f"⏳ <b>Dᴜʀᴀᴛɪᴏɴ:</b> <code>{premium_duration}</code>\n"
-            "📄 <b>Tʏᴘᴇ:</b> <code>Pᴜʀᴄʜᴀꜱᴇ</code>\n\n"
-            "📋 <b>Rᴇᴀꜱᴏɴ:</b> <code>Sᴏʀʀʏ ᴘᴀʏᴍᴇɴᴛ ɴᴏᴛ ʀᴇᴄᴇɪᴠᴇᴅ.</code>\n\n"
-            "<i>Mᴀᴋᴇ ᴘᴀʏᴍᴇɴᴛ ᴀɴᴅ ꜱᴇɴᴅ ʀᴇQᴜᴇꜱᴛ ᴀɢᴀɪɴ. ☺️</i>\n\n"
-            "<i>Iꜰ ʏᴏᴜ ʙᴇʟɪᴇᴠᴇ ᴛʜɪꜱ ɪꜱ ᴀ ᴍɪꜱᴛᴀᴋᴇ ᴏʀ ʜᴀᴠᴇ ᴀɴʏ Qᴜᴇꜱᴛɪᴏɴꜱ, ꜰᴇᴇʟ ꜰʀᴇᴇ ᴛᴏ ᴄᴏɴᴛᴀᴄᴛ ᴛʜᴇ ᴀᴅᴍɪɴ. 🧑‍💻💬</i>"
-        )
-
-        user_buttons = InlineKeyboardMarkup([
-            [InlineKeyboardButton("📢 Jᴏɪɴ Uᴘᴅᴀᴛᴇꜱ", url="https://t.me/+Jo5HxFRcEENlMzNl"), InlineKeyboardButton("📜 Oᴡɴᴇʀ", url="https://t.me/premiumuseronly_Bot")]
-        ])
-
-        try: 
-            await client.send_photo(
-                chat_id=target_user_id,
-                photo=DECLINED_PIC,
-                caption=reject_text,
-                reply_markup=user_buttons,
-                parse_mode=enums.ParseMode.HTML
-            )
-        except Exception:
-            try:
-                await client.send_message(
-                    chat_id=target_user_id, 
-                    text=reject_text, 
-                    reply_markup=user_buttons,
-                    parse_mode=enums.ParseMode.HTML
-                )
-            except Exception: 
-                pass
-
-        current_caption = query.message.caption or ""
-        new_caption = current_caption + f"\n\n<b>Sᴛᴀᴛᴜꜱ:</b> ❌ Rᴇᴊᴇᴄᴛᴇᴅ ʙʏ {query.from_user.mention}"
-        
-        try:
-            await query.message.edit_caption(
-                caption=new_caption, 
-                reply_markup=None, 
-                parse_mode=enums.ParseMode.HTML
-            )
-        except Exception: 
-            pass
+    elif data.startswith("claim_") and not any(x in data for x in ["_mov", "_inst"]):
+        t_id = data.split("_")[1]
+        btns = [[InlineKeyboardButton("ᴍᴏᴠɪᴇ ᴠɪᴘ", callback_data=f"claim_mov_{t_id}"), InlineKeyboardButton("ɪɴsᴛᴀ ᴠɪᴘ", callback_data=f"claim_inst_{t_id}")]]
+        await query.message.edit_text("sᴇʟᴇᴄᴛ ᴄᴀᴛᴇɢᴏʀʏ ᴛᴏ ᴄʟᴀɪᴍ ʀᴇᴡᴀʀᴅ:", reply_markup=InlineKeyboardMarkup(btns))
             
-    elif data.startswith("claim_") and data != "claim_trial":
-        target_user_id = int(data.split("_")[1])
+    elif data.startswith("claim_mov_") or data.startswith("claim_inst_"):
+        _, p_type, t_id = data.split("_")
+        t_id = int(t_id)
+        if user_id != t_id: return await query.answer("ɴᴏᴛ ʏᴏᴜʀ ʀᴇᴡᴀʀᴅ!", show_alert=True)
 
-        if user_id != target_user_id:
-            return await query.answer("❌ Yᴏᴜ ᴄᴀɴɴᴏᴛ ᴄʟᴀɪᴍ ᴛʜɪꜱ ʀᴇᴡᴀʀᴅ! Uꜱᴇ /myreward.", show_alert=True)
-
-        user_profile = await db.get_user(user_id) or {"id": user_id, "name": query.from_user.first_name}
-        current_time = datetime.now()
+        user_p = await db.get_user(t_id) or {"id": t_id}
+        exp_key = "expiry_mov" if p_type == "mov" else "expiry_inst"
         
-        current_expiry = user_profile.get("expiry_time")
-        if current_expiry and current_expiry.tzinfo:
-            current_expiry = current_expiry.replace(tzinfo=None)
+        now = datetime.now()
+        curr_exp = user_p.get(exp_key)
+        if curr_exp and curr_exp.replace(tzinfo=None) > now:
+            return await query.answer("ʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ᴘʀᴇᴍɪᴜᴍ!", show_alert=True)
 
-        if current_expiry and current_expiry > current_time:
-            return await query.answer("❌ Yᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ᴀ ᴘʀᴇᴍɪᴜᴍ ᴍᴇᴍʙᴇʀ! Yᴏᴜ ᴄᴀɴɴᴏᴛ ᴄʟᴀɪᴍ ʀᴇᴡᴀʀᴅꜱ ʀɪɢʜᴛ ɴᴏᴡ.", show_alert=True)
-
-        user_data = await db.rewards.find_one({"user_id": user_id})
-        coins = user_data.get("coins", 0) if user_data else 0
-
-        if coins < 50:
-            return await query.answer("❌ Yᴏᴜ ɴᴇᴇᴅ ᴀᴛ ʟᴇᴀꜱᴛ 50 ᴘᴏɪɴᴛꜱ ᴛᴏ ᴄʟᴀɪᴍ ᴀ ʀᴇᴡᴀʀᴅ!", show_alert=True)
-
-        REWARD_TIERS = [
-            {"cost": 180, "duration": "48 Hᴏᴜʀ", "hours": 48},  
-            {"cost": 150, "duration": "24 Hᴏᴜʀ", "hours": 24},  
-            {"cost": 110, "duration": "12 Hᴏᴜʀ", "hours": 12},  
-            {"cost": 60,  "duration": "6 Hᴏᴜʀ",  "hours": 6},   
-            {"cost": 50,  "duration": "2 Hᴏᴜʀ",  "hours": 2}    
-        ]
-
-        eligible_tier = next((tier for tier in REWARD_TIERS if coins >= tier["cost"]), None)
-
-        if not eligible_tier:
-            return await query.answer("❌ Nᴏᴛ ᴇɴᴏᴜɢʜ ᴘᴏɪɴᴛꜱ ꜰᴏʀ ᴀɴʏ ʀᴇᴡᴀʀᴅ ᴛɪᴇʀ.", show_alert=True)
-
-        cost = eligible_tier["cost"]
-        duration = eligible_tier["duration"]
-        hours_to_add = eligible_tier["hours"]
-        remaining_points = coins - cost
-
-        await query.answer("🔄 Pʀᴏᴄᴇꜱꜱɪɴɢ ʏᴏᴜʀ ᴘʀᴇᴍɪᴜᴍ ʀᴇᴡᴀʀᴅ...", show_alert=False)
-
-        await db.rewards.update_one(
-            {"user_id": user_id},
-            {"$set": {"coins": remaining_points}}
-        )
-
-        new_expiry = current_time + timedelta(hours=hours_to_add)
-        user_profile["expiry_time"] = new_expiry
+        reward_db = await db.rewards.find_one({"user_id": t_id})
+        coins = reward_db.get("coins", 0) if reward_db else 0
         
-        btn = None
-        try:
-            invite_link = await client.create_chat_invite_link(
-                chat_id=CHANNEL_LINK, 
-                member_limit=1, 
-                expire_date=current_time + timedelta(minutes=5)
-            )
-            btn = InlineKeyboardMarkup([[InlineKeyboardButton("✨ Jᴏɪɴ VIP Cʜᴀɴɴᴇʟ ✨", url=invite_link.invite_link)]])
-        except Exception:
-            pass
-
-        await db.update_user(user_profile)
-
-        try:
-            await client.send_message(
-                chat_id=LOG_CHANNEL,
-                text=(
-                    f"🎁 <b>#Rᴇᴡᴀʀᴅ_Cʟᴀɪᴍᴇᴅ</b>\n\n"
-                    f"👤 <b>Uꜱᴇʀ:</b> {query.from_user.mention} [<code>{user_id}</code>]\n"
-                    f"🪙 <b>Pᴏɪɴᴛꜱ Sᴘᴇɴᴛ:</b> <code>{cost}</code>\n"
-                    f"⏱️ <b>Pʀᴇᴍɪᴜᴍ Gᴏᴛ:</b> <code>{duration}</code>"
-                )
-            )
-        except Exception:
-            pass
+        tiers = [{"c": 180, "h": 48}, {"c": 150, "h": 24}, {"c": 110, "h": 12}, {"c": 60, "h": 6}, {"c": 50, "h": 2}]
+        tier = next((x for x in tiers if coins >= x["c"]), None)
         
-        success_caption = (
-            f"✅ <b>Rᴇᴡᴀʀᴅ Cʟᴀɪᴍᴇᴅ Sᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ!</b> 🎉\n\n"
-            f"🎁 Yᴏᴜ ꜱᴘᴇɴᴛ <b>{cost} ᴘᴏɪɴᴛꜱ</b> ᴀɴᴅ ʀᴇᴄᴇɪᴠᴇᴅ <b>{duration} Pʀᴇᴍɪᴜᴍ</b>.\n"
-            f"💰 <b>Rᴇᴍᴀɪɴɪɴɢ Pᴏɪɴᴛꜱ:</b> <code>{remaining_points}</code>\n\n"
-            f"🚀 <i>Cʜᴇᴄᴋ ʏᴏᴜʀ ꜱᴛᴀᴛᴜꜱ ᴜꜱɪɴɢ /myplan</i>"
-        )
+        if not tier: return await query.answer("ɴᴇᴇᴅ 50 ᴘᴏɪɴᴛs!", show_alert=True)
 
+        await db.rewards.update_one({"user_id": t_id}, {"$inc": {"coins": -tier["c"]}})
+        user_p[exp_key] = now + timedelta(hours=tier["h"])
+        await db.update_user(user_p)
+
+        target_ch = CHANNEL_LINK_MOV if p_type == "mov" else CHANNEL_LINK_INST
         try:
+            link = await client.create_chat_invite_link(chat_id=target_ch, member_limit=1, expire_date=now + timedelta(minutes=10))
+            btn = InlineKeyboardMarkup([[InlineKeyboardButton("ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ", url=link.invite_link)]])
+            await client.send_photo(chat_id=t_id, photo=CLAIM_REWARD_PIC, caption="🎁 ʀᴇᴡᴀʀᴅ ᴄʟᴀɪᴍᴇᴅ sᴜᴄᴄᴇssғᴜʟʟʏ!", reply_markup=btn)
             await query.message.delete()
-        except Exception:
-            pass
-            
-        await client.send_photo(
-            chat_id=user_id,
-            photo=CLAIM_REWARD_PIC,
-            caption=success_caption,
-            reply_markup=btn,
-            parse_mode=enums.ParseMode.HTML
-        )
+        except: pass
+
+    elif data.startswith("sendlink_"):
+        _, p_type, t_id, t_str = data.split("_")
+        t_id = int(t_id)
+        target_ch = CHANNEL_LINK_MOV if p_type == "mov" else CHANNEL_LINK_INST
         
+        try:
+            link = await client.create_chat_invite_link(chat_id=target_ch, member_limit=1, expire_date=datetime.now() + timedelta(minutes=10))
+            btn = InlineKeyboardMarkup([[InlineKeyboardButton("ᴊᴏɪɴ ᴠɪᴘ", url=link.invite_link)]])
+            await client.send_message(chat_id=t_id, text=f"🎉 ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴛɪᴠᴀᴛᴇᴅ ғᴏʀ {t_str}!", reply_markup=btn)
+            await query.message.edit_text("✅ ʟɪɴᴋ sᴇɴᴛ ᴛᴏ ᴜsᴇʀ!")
+        except: await query.message.edit_text("❌ ғᴀɪʟᴇᴅ ᴛᴏ sᴇɴᴅ ʟɪɴᴋ!")
+            
