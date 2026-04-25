@@ -22,16 +22,21 @@ ADMINS = list(map(int, environ.get("ADMINS", "1249672673").split()))
 LOG_CHANNEL = int(environ.get("LOG_CHANNEL", "-1002580860502"))
 SCREENSHOT = int(environ.get("SCREENSHOT_CHANNEL", "-1002813745328"))
 
-#add premium channel 
+# add premium channel 
 CHANNEL_LINK_INST = int(environ.get("INSTA_LINK_ID", "-1002259803190"))
 CHANNEL_LINK_MOV = int(environ.get("MOVIE_LINK_ID", "-1001551886347"))
 
+# ✅ FIX: universal variable (IMPORTANT)
+CHANNEL_LINK = CHANNEL_LINK_MOV
 
-#post channel 
+# post channel 
 MOVIE_CHANNEL = int(environ.get("MOVIE_POST_ID", "-1002752399247"))
 INSTA_CHANNEL = int(environ.get("INSTA_POST_ID", "-1002259803190"))
 
-DB_URL = environ.get('DATABASE_URI', "mongodb+srv://technicalseekho249_db_user:JI2rAJvc0RE2asYE@cluster0.8hgdhqt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+DB_URL = environ.get(
+    'DATABASE_URI',
+    "mongodb+srv://technicalseekho249_db_user:JI2rAJvc0RE2asYE@cluster0.8hgdhqt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+)
 DB_NAME = environ.get('DATABASE_NAME', "testing")
 
 CHANNEL = environ.get("CHANNEL", "https://t.me/MovieSearchAutoGroup")
