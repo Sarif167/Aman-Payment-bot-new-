@@ -79,7 +79,7 @@ async def check_expired_premium(client):
                         await client.send_photo(
                             u_id,
                             photo=EXPIRE_SOON_PIC,
-                            caption=f"<b>ʜᴇʏ,\n\nʏᴏᴜʀ {category} Aapka premium kuch hi samay me expire ho jayega {label}.\n\VIP me rehne ke liye abhi renew karein!</b>"
+                            caption=f"<b>ʜᴇʏ,\n\nʏᴏᴜʀ {category} Aapka premium kuch hi samay me expire ho jayega {label}.\nVIP me rehne ke liye abhi renew karein!</b>"
                         )
                         await db.users.update_one({"id": u_id}, {"$set": {reminder_key: True}})
                     except: pass
