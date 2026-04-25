@@ -9,8 +9,7 @@ async def admin_cmd(client, message):
         [KeyboardButton("/stats"), KeyboardButton("/payments")],
         [KeyboardButton("/check_user"), KeyboardButton("/premium_user")],
         [KeyboardButton("/addpremium"), KeyboardButton("/removepremium")],
-        [KeyboardButton("/code"), KeyboardButton("/allcodes")],
-        [KeyboardButton("/delete_redeem"), KeyboardButton("/clearcodes")],
+        [KeyboardButton("/mov_post"), KeyboardButton("/inst_post")],
         [KeyboardButton("/broadcast"), KeyboardButton("/msg")]
     ]
     
