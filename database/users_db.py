@@ -9,6 +9,7 @@ mydb = client[DB_NAME]
 class Database:
     def __init__(self):
         self.users = mydb.users
+        self.req = mydb.req
         self.codes = mydb.codes
         self.rewards = mydb.rewards
         self.payment_state = mydb.payment_state 
@@ -34,6 +35,23 @@ class Database:
     async def total_users_count(self):
         return await self.users.count_documents({})
 
+    async def add_join_req(self, user_id: int, channel_id: int):
+        await self.req.update_one(
+            {'user_id': user_id},
+            {
+                '$addToSet': {'channels': channel_id},
+                '$setOnInsert': {'created_at': datetime.datetime.utcnow()}
+            },
+            upsert=True
+        )
+
+    async def has_joined_channel(self, user_id: int, channel_id: int):
+        doc = await self.req.find_one({'user_id': user_id})
+        return doc and 'channels' in doc and channel_id in doc['channels']
+
+    async def del_join_req(self):
+        await self.req.drop()
+        
     async def set_payment_state(self, user_id, data):
         await self.payment_state.update_one(
             {"user_id": int(user_id)},
