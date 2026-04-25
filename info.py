@@ -15,6 +15,8 @@ SUCCESSFULLY_PIC = environ.get("SUCCESS_PIC", "https://files.catbox.moe/1vvrjd.j
 EXPIRE_SOON_PIC = environ.get("REMINDER_PIC", "https://files.catbox.moe/j27k1r.jpg")
 END_PIC = environ.get("EXPIRY_PIC", "https://files.catbox.moe/eevnt4.jpg")
 REWARD_PIC = environ.get("REWARD_PIC", "https://files.catbox.moe/ktdef9.jpg")
+# ✅ ADD THIS LINE
+TRIAL_PIC = environ.get("TRIAL_PIC", "https://files.catbox.moe/ktdef9.jpg")
 CLAIM_REWARD_PIC = environ.get("CLAIM_PIC", "https://files.catbox.moe/20jktr.jpg")
 AUTH_PICS = environ.get("AUTH_PICS", "https://files.catbox.moe/facpku.jpg")
 
