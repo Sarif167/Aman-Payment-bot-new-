@@ -5,7 +5,7 @@ def str_to_bool(val):
 
 API_ID = int(environ.get('API_ID', '28690893'))
 API_HASH = environ.get('API_HASH', 'c214f988aa1ac0b998ace0b7cd0e215f')
-BOT_TOKEN = environ.get("BOT_TOKEN", "6731465253:AAE-JIQBNCTtWGz6D3vwS67YiBWazrhqDTY")
+BOT_TOKEN = environ.get("BOT_TOKEN", "")
 PORT = environ.get("PORT", "8000")
 
 START_PIC = environ.get("START_PIC", "https://image.zaw-myo.workers.dev/image/c9763285-653d-43b3-a7eb-26865066a039")
@@ -23,8 +23,8 @@ LOG_CHANNEL = int(environ.get("LOG_CHANNEL", "-1002580860502"))
 SCREENSHOT = int(environ.get("SCREENSHOT_CHANNEL", "-1002813745328"))
 
 #add premium channel 
-CHANNEL_LINK_INST = int(environ.get("INSTA_LINK_ID", "-1002114619001"))
-CHANNEL_LINK_MOV = int(environ.get("MOVIE_LINK_ID", "-1002114619001"))
+CHANNEL_LINK_INST = int(environ.get("INSTA_LINK_ID", "-1002259803190"))
+CHANNEL_LINK_MOV = int(environ.get("MOVIE_LINK_ID", "-1001551886347"))
 
 
 #post channel 
@@ -38,5 +38,5 @@ CHANNEL = environ.get("CHANNEL", "https://t.me/+7ZONGwSTliI2ZWI1")
 SUPPORT = environ.get("SUPPORT", "https://t.me/+7ZONGwSTliI2ZWI1")
 
 AUTH_CHANNEL = list(map(int, environ.get("AUTH_CHANNEL", "-1002813745328").split()))
-AUTH_REQ_CHANNEL = list(map(int, environ.get("AUTH_REQ_CHANNELS", "-1002658797882").split()))
+AUTH_REQ_CHANNEL = list(map(int, environ.get("AUTH_REQ_CHANNELS", "-1002641663814").split()))
 FSUB = str_to_bool(environ.get("FSUB", "True"))
