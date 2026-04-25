@@ -1,92 +1,89 @@
-import logging
+import logging, pytz
 from aiohttp import web
 from datetime import datetime, timedelta
 from asyncio import sleep
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from database.users_db import db
-from info import CHANNEL_LINK, LOG_CHANNEL, END_PIC, EXPIRE_SOON_PIC, SUPPORT
+from info import (
+    LOG_CHANNEL, END_PIC, EXPIRE_SOON_PIC, 
+    CHANNEL_LINK_MOV, CHANNEL_LINK_INST
+)
 
 routes = web.RouteTableDef()
 
 @routes.get("/", allow_head=True)
 async def root_route_handler(request):
-    return web.Response(text="𝚇𝙿 sᴜʙsᴄʀɪᴘᴛɪᴏɴ ʙᴏᴛ ʀᴜɴɴɪɴɢ ✅")
+    return web.Response(text="sᴜʙsᴄʀɪᴘᴛɪᴏɴ ʙᴏᴛ ʀᴜɴɴɪɴɢ ✅")
 
 def web_server():
     app = web.Application(client_max_size=30000000)
     app.add_routes(routes)
     return app 
 
-# Reminder intervals fixed
 REMINDER_TIMES = [
-    ("10 ᴍɪɴᴜᴛᴇs", timedelta(minutes=10)),
-    ("50 ᴍɪɴᴜᴛᴇs", timedelta(minutes=50)),
-    ("1 ᴅᴀʏ", timedelta(days=1)) # 'day' fixed to 'days'
+    ("𝟷𝟶 ᴍɪɴᴜᴛᴇs", timedelta(minutes=10)),
+    ("𝟷 ʜᴏᴜʀ", timedelta(hours=1)),
+    ("𝟷 ᴅᴀʏ", timedelta(days=1))
 ]
 
 async def check_expired_premium(client):
     while True:
-        now = datetime.utcnow()
+        now = datetime.now()
         
-        # 1. HANDLE EXPIRED USERS (Auto-Kick)
-        expired_users = await db.get_expired(now)
-        for user in expired_users:
-            user_id = user["id"]
-            try:
-                await db.remove_premium_access(user_id)
-                unset_flags = {f"reminder_{label}_sent": "" for label, _ in REMINDER_TIMES}
-                await db.users.update_one({"id": user_id}, {"$unset": unset_flags})
-                
-                tg_user = await client.get_users(user_id)
-                
-                # Kick from VIP Channel
+        for category, channel, expiry_key in [
+            ("🎬 ᴍᴏᴠɪᴇ", CHANNEL_LINK_MOV, "expiry_mov"),
+            ("📸 ɪ狀sᴛᴀ", CHANNEL_LINK_INST, "expiry_inst")
+        ]:
+            # 1. ʜᴀɴᴅʟᴇ ᴇxᴘɪʀᴇᴅ ᴜsᴇʀs
+            expired_users = await db.users.find({expiry_key: {"$lt": now}}).to_list(None)
+            
+            for user in expired_users:
+                u_id = user["id"]
                 try:
-                    await client.ban_chat_member(chat_id=CHANNEL_LINK, user_id=user_id)
-                    await client.unban_chat_member(chat_id=CHANNEL_LINK, user_id=user_id)
-                except:
-                    pass
+                    await db.users.update_one({"id": u_id}, {"$unset": {expiry_key: ""}})
+                    
+                    try:
+                        await client.ban_chat_member(channel, u_id)
+                        await client.unban_chat_member(channel, u_id)
+                    except: pass
 
-                # Buttons for Expiry Message
-                expiry_buttons = InlineKeyboardMarkup([
-                    [InlineKeyboardButton("✨ ʀᴇɴᴇᴡ sᴜʙsᴄʀɪᴘᴛɪᴏɴ ✨", callback_data="subscription")],
-                    [InlineKeyboardButton("📢 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇs", url="https://t.me/TenxHubBackup"), InlineKeyboardButton("📜 ᴏᴡɴᴇʀ", url="https://t.me/xp_prajwal")]
-                ])
-
-                await client.send_photo(
-                    chat_id=user_id,
-                    photo=END_PIC,
-                    caption=f"<b>ʜᴇʏ {tg_user.mention},\n\nʏᴏᴜʀ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇss ʜᴀs ᴇxᴘɪʀᴇᴅ ᴀɴᴅ ʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ ғʀᴏᴍ ᴛʜᴇ ᴠɪᴘ ᴄʜᴀɴɴᴇʟ.\n\nᴛᴀᴘ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴛᴏ ʀᴇɴᴇᴡ ɴᴏᴡ!</b>",
-                    reply_markup=expiry_buttons
-                )
-
-                await client.send_message(
-                    LOG_CHANNEL,
-                    f"<b>#ᴘʀᴇᴍɪᴜᴍ_ᴇxᴘɪʀᴇᴅ_ᴋɪᴄᴋᴇᴅ\n\nᴜsᴇʀ: {tg_user.mention}\nɪᴅ: <code>{user_id}</code></b>"
-                )
-            except Exception as e:
-                logging.error(f"Expiry Error for {user_id}: {e}")
-            await sleep(0.5)
-
-        # 2. HANDLE REMINDERS (Before Expiry)
-        for label, delta in REMINDER_TIMES:
-            reminder_users = await db.get_expiring_soon(label, delta)
-            for user in reminder_users:
-                user_id = user["id"]
-                try:
-                    tg_user = await client.get_users(user_id)
+                    btns = InlineKeyboardMarkup([
+                        [InlineKeyboardButton("ᴄᴏɴᴛᴀᴄᴛ ᴀᴅᴍɪɴ", url="https://t.me/premiumuseronly_Bot")]
+                    ])
 
                     await client.send_photo(
-                        user_id,
-                        photo=EXPIRE_SOON_PIC,
-                        caption=f"<b>ʜᴇʏ {tg_user.mention},\n\nʏᴏᴜʀ ᴘʀᴇᴍɪᴜᴍ ᴡɪʟʟ ᴇxᴘɪʀᴇ ɪɴ {label}.\n\nʀᴇɴᴇᴡ ɴᴏᴡ ᴛᴏ ᴀᴠᴏɪᴅ ɢᴇᴛᴛɪɴɢ ʀᴇᴍᴏᴠᴇᴅ ғʀᴏᴍ ᴠɪᴘ!</b>"
+                        chat_id=u_id,
+                        photo=END_PIC,
+                        caption=f"<b>ʜᴇʏ,\n\nʏᴏᴜʀ {category} Aapka premium access expire ho gaya hai aur aapko VIP channel se remove kar diya gaya hai.</b>",
+                        reply_markup=btns
                     )
 
-                    await client.send_message(
-                        chat_id=LOG_CHANNEL,
-                        caption=f"<b>#ʀᴇᴍɪɴᴅᴇʀ_sᴇɴᴛ ({label})\n\nᴜsᴇʀ: {tg_user.mention}\nɪᴅ: <code>{user_id}</code></b>"
-                    )
+                    await client.send_message(LOG_CHANNEL, f"<b>#ᴇxᴘɪʀᴇᴅ_ᴋɪᴄᴋᴇᴅ\n\nᴜsᴇʀ: <code>{u_id}</code>\nᴄᴀᴛᴇɢᴏʀʏ: {category}</b>")
                 except Exception as e:
-                    logging.error(f"Reminder Error for {user_id}: {e}")
+                    logging.error(f"ᴇxᴘɪʀʏ ᴇʀʀᴏʀ: {e}")
                 await sleep(0.5)
+
+            # 2. ʜᴀɴᴅʟᴇ ʀᴇᴍɪɴᴅᴇʀs
+            for label, delta in REMINDER_TIMES:
+                reminder_key = f"rem_{expiry_key}_{label.replace(' ', '_')}"
+                upcoming = now + delta
                 
-        await sleep(30) # Loop interval to save CPU
+                users_to_remind = await db.users.find({
+                    expiry_key: {"$gt": now, "$lt": upcoming},
+                    reminder_key: {"$exists": False}
+                }).to_list(None)
+
+                for user in users_to_remind:
+                    u_id = user["id"]
+                    try:
+                        await client.send_photo(
+                            u_id,
+                            photo=EXPIRE_SOON_PIC,
+                            caption=f"<b>ʜᴇʏ,\n\nʏᴏᴜʀ {category} Aapka premium kuch hi samay me expire ho jayega {label}.\n\VIP me rehne ke liye abhi renew karein!</b>"
+                        )
+                        await db.users.update_one({"id": u_id}, {"$set": {reminder_key: True}})
+                    except: pass
+                    await sleep(0.5)
+
+        await sleep(60)
+        
