@@ -16,11 +16,14 @@ class temp(object):
     USERS_CANCEL = False  
 
 FIXED_PRICES = [15, 39, 75, 110, 199, 360]
-UPI_ID = "pay.to.prajwal@ybl"
-NAME = "prajwal"
+UPI_ID = "premiumuseronly@ibl"
+NAME = "SekhSarif"
 CURRENCY = "INR"
 
-FIXED_PRICES2 = {
+MOVIE_PRICES = [15, 39, 75, 110, 199, 360]
+INSTAGRAM_PRICES = [15, 39, 75, 110, 199, 360]
+
+INSTAGRAM_PRICES2 = {
     15: "1week",
     39: "1month",
     75: "2month",
@@ -29,23 +32,14 @@ FIXED_PRICES2 = {
     360: "12month"
 }
 
-def get_seconds(time_str):
-    time_units = {
-        'year': 31536000,
-        'month': 2592000,
-        'week': 604800,
-        'day': 86400,
-        'hour': 3600,
-        'min': 60
-    }
-    for unit in time_units:
-        if time_str.endswith(unit):
-            try:
-                time_amount = int(time_str.replace(unit, ''))
-                return time_amount * time_units[unit]
-            except:
-                return -1
-    return -1
+MOVIE_PRICES2 = {
+    15: "1week",
+    39: "1month",
+    75: "2month",
+    110: "3month",
+    199: "6month",
+    360: "12month"
+}
     
 def generate_qr(link):
     qr = qrcode.make(link)
@@ -55,7 +49,16 @@ def generate_qr(link):
     bio.seek(0)
     return bio
 
-FIXED_PRICES3 = {
+MOVIE_PRICES1 = {
+    15: "1 week premium for",
+    39: "1 month premium for",
+    75: "2 month premium for",
+    110: "3 month premium for",
+    199: "6 month premium for",
+    360: "12 month premium for"
+}
+
+INSTAGRAM_PRICES1 = {
     15: "1 week premium for",
     39: "1 month premium for",
     75: "2 month premium for",
@@ -104,31 +107,66 @@ def get_time_str(amount):
     mapping = {15: "1ᴡᴇᴇᴋ", 39: "1ᴍᴏɴᴛʜ", 75: "2ᴍᴏɴᴛʜ", 110: "3ᴍᴏɴᴛʜ", 199: "6ᴍᴏɴᴛʜ", 360: "12ᴍᴏɴᴛʜ"}
     return mapping.get(amount)
 
-async def payment_timer_task(client, user_id, chat_id, amount, premium_duration, photo_id, text_id):
-    await asyncio.sleep(300) 
+def get_seconds(time_string):
+    def extract_value_and_unit(ts):
+        value = ""
+        unit = ""
+        index = 0
+        while index < len(ts) and ts[index].isdigit():
+            value += ts[index]
+            index += 1
+        unit = ts[index:].strip().lower()
+        if value:
+            value = int(value)
+        return value, unit
+        
+    value, unit = extract_value_and_unit(time_string)
+    unit_mapping = {
+        's': 1,
+        'sec': 1,
+        'second': 1,
+        'seconds': 1,
+        'min': 60,
+        'minute': 60,
+        'minutes': 60,
+        'hour': 3600,
+        'hours': 3600,
+        'day': 86400,
+        'days': 86400,
+        'month': 86400 * 30,
+        'months': 86400 * 30,
+        'year': 86400 * 365,
+        'years': 86400 * 365
+    }
+    
+async def payment_timer_task(client, user_id, chat_id, amount, pay_type, photo_id, text_id):
+    await asyncio.sleep(300) # 5 minutes
     state_data = await db.get_payment_state(user_id)
     
-    if state_data:
-        if state_data.get("photo_id") == photo_id:
-            await db.del_payment_state(user_id) 
-            try:
-                await client.delete_messages(chat_id=chat_id, message_ids=[photo_id, text_id])
-            except:
-                pass
-            
-            buttons = [
-                [InlineKeyboardButton("🏠 ᴍᴀɪɴ ᴍᴇɴᴜ", callback_data="start"),
-                 InlineKeyboardButton("🔄 ʀᴇsᴛᴀʀᴛ", callback_data=f"pay_{amount}")]
+    # Check karein agar payment abhi bhi pending hai
+    if state_data and state_data.get("photo_id") == photo_id:
+        await db.del_payment_state(user_id) 
+        try:
+            await client.delete_messages(chat_id=chat_id, message_ids=[photo_id, text_id])
+        except:
+            pass
+        
+        # Restart button will now point to pay_mov_ or pay_inst_
+        buttons = [
+            [
+                InlineKeyboardButton("🏠 ᴍᴀɪɴ ᴍᴇɴᴜ", callback_data="start"),
+                InlineKeyboardButton("🔄 ʀᴇsᴛᴀʀᴛ", callback_data=f"pay_{pay_type}_{amount}")
             ]
-            
-            await client.send_message(
-                chat_id=chat_id,
-                text=(
-                    "⏳ <b>ᴘᴀʏᴍᴇɴᴛ ᴛɪᴍᴇ ᴇxᴘɪʀᴇᴅ!</b>\n\n"
-                    "ʏᴏᴜʀ 5-ᴍɪɴᴜᴛᴇ ᴘᴀʏᴍᴇɴᴛ ᴡɪɴᴅᴏᴡ ʜᴀs ʙᴇᴇɴ ᴄʟᴏsᴇᴅ. "
-                    "ɪғ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴛʀʏ ᴀɢᴀɪɴ, ᴄʟɪᴄᴋ ʀᴇsᴛᴀʀᴛ ʙᴇʟᴏᴡ."
-                ),
-                reply_markup=InlineKeyboardMarkup(buttons),
-                parse_mode=enums.ParseMode.HTML
-    )
-            
+        ]
+        
+        await client.send_message(
+            chat_id=chat_id,
+            text=(
+                "⏳ <b>Payment ka samay expire ho gaya hai!</b>\n\n"
+                "Aapka 5 minute ka payment window close ho chuka hai, kripya dubara try karein. "
+                "Agar aap phir se try karna chahte hain, to neeche Restart par click karein."
+            ),
+            reply_markup=InlineKeyboardMarkup(buttons),
+            parse_mode=enums.ParseMode.HTML
+        )
+        
