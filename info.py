@@ -37,6 +37,6 @@ DB_NAME = environ.get('DATABASE_NAME', "testing")
 CHANNEL = environ.get("CHANNEL", "https://t.me/TenxHubBackup")
 SUPPORT = environ.get("SUPPORT", "https://t.me/TenxHubSupport")
 
-AUTH_CHANNEL = list(map(int, environ.get("AUTH_CHANNEL", "-1002114619001").split()))
-AUTH_REQ_CHANNEL = list(map(int, environ.get("AUTH_REQ_CHANNELS", "-1002114619001").split()))
+AUTH_CHANNEL = list(map(int, environ.get("AUTH_CHANNEL", "-1002641663814").split()))
+AUTH_REQ_CHANNEL = list(map(int, environ.get("AUTH_REQ_CHANNELS", "-1002314687215").split()))
 FSUB = str_to_bool(environ.get("FSUB", "True"))
