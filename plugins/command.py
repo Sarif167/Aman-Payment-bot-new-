@@ -70,7 +70,7 @@ async def movie_menu(client, message, group_id=None):
             expiry_mov = expiry_mov.replace(tzinfo=None)
         
         if expiry_mov > current_time:
-            buttons = [[InlineKeyboardButton("📞 Cᴏɴᴛᴀᴄᴛ Mᴇ", url="https://t.me/premiumuseronly_Bot")]]
+            buttons = [[InlineKeyboardButton("📞 Cᴏɴᴛᴀᴄᴛ Mᴇ", url="https://t.me/aman")]]
             return await message.reply_text(
                 text="🌟 <b>Yᴏᴜ Aʟʀᴇᴀᴅʏ Hᴀᴠᴇ Mᴏᴠɪᴇ Pᴀss!</b>\n\n<i>Cʜᴇᴄᴋ ᴅᴇᴛᴀɪʟs ᴠɪᴀ /myplan.</i>",
                 reply_markup=InlineKeyboardMarkup(buttons)
@@ -84,7 +84,7 @@ async def movie_menu(client, message, group_id=None):
             price_buttons.append(row)
             row = []
     if row: price_buttons.append(row)
-    price_buttons.append([InlineKeyboardButton("📞 Cᴏɴᴛᴀᴄᴛ Mᴇ", url="https://t.me/premiumuseronly_Bot")])
+    price_buttons.append([InlineKeyboardButton("📞 Cᴏɴᴛᴀᴄᴛ Mᴇ", url="https://t.me/aman")])
     
     await message.reply_text(
         text=f"🍿 <b>Mᴏᴠɪᴇ Sᴜʙsᴄʀɪᴘᴛɪᴏɴ Pʟᴀɴs</b>\n\nSᴇʟᴇᴄᴛ ᴀ ᴘʟᴀɴ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ:",
@@ -103,9 +103,9 @@ async def inst_menu(client, message, group_id=None):
             expiry_inst = expiry_inst.replace(tzinfo=None)
             
         if expiry_inst > current_time:
-            buttons = [[InlineKeyboardButton("📞 Cᴏɴᴛᴀᴄᴛ Mᴇ", url="https://t.me/premiumuseronly_Bot")]]
+            buttons = [[InlineKeyboardButton("📞 Cᴏɴᴛᴀᴄᴛ Mᴇ", url="https://t.me/aman")]]
             return await message.reply_text(
-                text="✨ <b>Aap pehle se hi VIP member hain!</b>\n\n<i>Apni details check karne ke liye /myplan use karein.</i>",
+                text="✨ <b>Yᴏᴜ Aʀᴇ Aʟʀᴇᴀᴅʏ A VIP Mᴇᴍʙᴇʀ!</b>\n\n<i>Cʜᴇᴄᴋ ᴅᴇᴛᴀɪʟs ᴠɪᴀ /myplan.</i>",
                 reply_markup=InlineKeyboardMarkup(buttons)
             )
 
@@ -118,7 +118,7 @@ async def inst_menu(client, message, group_id=None):
             row = []
     if row: 
         price_buttons.append(row)
-    price_buttons.append([InlineKeyboardButton("📞 Cᴏɴᴛᴀᴄᴛ Mᴇ", url="https://t.me/premiumuseronly_Bot")])
+    price_buttons.append([InlineKeyboardButton("📞 Cᴏɴᴛᴀᴄᴛ Mᴇ", url="https://t.me/aman")])
     
     await message.reply_text(
         text=f"📸 <b>Pʀᴇᴍɪᴜᴍ VIP Pʟᴀɴs</b>\n\nCʜᴏᴏsᴇ ʏᴏᴜʀ ᴘʟᴀɴ:",

@@ -63,8 +63,8 @@ async def manual_remove_premium(client: Client, message: Message):
                 await client.unban_chat_member(ch, user_id)
             except: pass
 
-        await message.reply_text(f"✅ <b>Premium safalta se remove kar diya gaya hai {user_id}</b>")
-        try: await client.send_message(user_id, "⚠️ <b>Aapka premium access admin dwara remove kar diya gaya hai.</b>")
+        await message.reply_text(f"✅ <b>ᴘʀᴇᴍɪᴜᴍ ʀᴇᴍᴏᴠᴇᴅ sᴜᴄᴄᴇssғᴜʟʟʏ ғᴏʀ {user_id}</b>")
+        try: await client.send_message(user_id, "⚠️ <b>ʏᴏᴜʀ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇss ʜᴀs ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ ʙʏ ᴀᴅᴍɪɴ.</b>")
         except: pass
 
     except Exception as e:

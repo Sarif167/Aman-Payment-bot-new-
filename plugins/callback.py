@@ -82,7 +82,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         )
         sent_text = await client.send_message(
             chat_id=query.message.chat.id,
-            text="Abhi payment ka screenshot bhejein ya /cancel use karein",
+            text="sᴇɴᴅ ᴘᴀʏᴍᴇɴᴛ sᴄʀᴇᴇɴsʜᴏᴛ ɴᴏᴡ ᴏʀ ᴜsᴇ /cancel",
             parse_mode=enums.ParseMode.HTML
         )
 
