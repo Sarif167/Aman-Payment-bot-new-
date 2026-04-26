@@ -18,9 +18,9 @@ REWARD_PIC = environ.get("REWARD_PIC", "https://files.catbox.moe/ktdef9.jpg")
 CLAIM_REWARD_PIC = environ.get("CLAIM_PIC", "https://files.catbox.moe/20jktr.jpg")
 AUTH_PICS = environ.get("AUTH_PICS", "https://files.catbox.moe/facpku.jpg")
 
-ADMINS = list(map(int, environ.get("ADMINS", "5977931010").split()))
+ADMINS = list(map(int, environ.get("ADMINS", "1249672673").split()))
 LOG_CHANNEL = int(environ.get("LOG_CHANNEL", "-1002114619001"))
-SCREENSHOT = int(environ.get("SCREENSHOT_CHANNEL", "-1002114619001"))
+SCREENSHOT = int(environ.get("SCREENSHOT_CHANNEL", "-1002813745328"))
 
 #add premium channel 
 CHANNEL_LINK_INST = int(environ.get("INSTA_LINK_ID", "-1002114619001"))
