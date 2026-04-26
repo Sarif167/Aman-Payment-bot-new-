@@ -48,13 +48,13 @@ async def check_expired_premium(client):
                     except: pass
 
                     btns = InlineKeyboardMarkup([
-                        [InlineKeyboardButton("ᴄᴏɴᴛᴀᴄᴛ ᴀᴅᴍɪɴ", url="https://t.me/premiumuseronly_Bot")]
+                        [InlineKeyboardButton("ᴄᴏɴᴛᴀᴄᴛ ᴀᴅᴍɪɴ", url="https://t.me/aman")]
                     ])
 
                     await client.send_photo(
                         chat_id=u_id,
                         photo=END_PIC,
-                        caption=f"<b>ʜᴇʏ,\n\nʏᴏᴜʀ {category} Aapka premium access expire ho gaya hai aur aapko VIP channel se remove kar diya gaya hai.</b>",
+                        caption=f"<b>ʜᴇʏ,\n\nʏᴏᴜʀ {category} ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇss ʜᴀs ᴇxᴘɪʀᴇᴅ ᴀɴᴅ ʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ ғʀᴏᴍ ᴛʜᴇ ᴠɪᴘ ᴄʜᴀɴɴᴇʟ.</b>",
                         reply_markup=btns
                     )
 
@@ -79,7 +79,7 @@ async def check_expired_premium(client):
                         await client.send_photo(
                             u_id,
                             photo=EXPIRE_SOON_PIC,
-                            caption=f"<b>ʜᴇʏ,\n\nʏᴏᴜʀ {category} Aapka premium kuch hi samay me expire ho jayega {label}.\nVIP me rehne ke liye abhi renew karein!</b>"
+                            caption=f"<b>ʜᴇʏ,\n\nʏᴏᴜʀ {category} ᴘʀᴇᴍɪᴜᴍ ᴡɪʟʟ ᴇxᴘɪʀᴇ ɪɴ {label}.\n\nʀᴇɴᴇᴡ ɴᴏᴡ ᴛᴏ sᴛᴀʏ ɪɴ ᴠɪᴘ!</b>"
                         )
                         await db.users.update_one({"id": u_id}, {"$set": {reminder_key: True}})
                     except: pass
