@@ -19,16 +19,16 @@ CLAIM_REWARD_PIC = environ.get("CLAIM_PIC", "https://files.catbox.moe/20jktr.jpg
 AUTH_PICS = environ.get("AUTH_PICS", "https://files.catbox.moe/facpku.jpg")
 
 ADMINS = list(map(int, environ.get("ADMINS", "1249672673").split()))
-LOG_CHANNEL = int(environ.get("LOG_CHANNEL", "-1002114619001"))
+LOG_CHANNEL = int(environ.get("LOG_CHANNEL", "-1003184409377"))
 SCREENSHOT = int(environ.get("SCREENSHOT_CHANNEL", "-1002813745328"))
 
 #add premium channel 
 CHANNEL_LINK_INST = int(environ.get("INSTA_LINK_ID", "-1002114619001"))
-CHANNEL_LINK_MOV = int(environ.get("MOVIE_LINK_ID", "-1002114619001"))
+CHANNEL_LINK_MOV = int(environ.get("MOVIE_LINK_ID", "-1001551886347"))
 
 
 #post channel 
-MOVIE_CHANNEL = int(environ.get("MOVIE_POST_ID", "-1002114619001"))
+MOVIE_CHANNEL = int(environ.get("MOVIE_POST_ID", "-1001551886347"))
 INSTA_CHANNEL = int(environ.get("INSTA_POST_ID", "-1002114619001"))
 
 DB_URL = environ.get('DATABASE_URI', "mongodb+srv://testing1:avbotz@testing.kwuyv1a.mongodb.net/?appName=testing")
