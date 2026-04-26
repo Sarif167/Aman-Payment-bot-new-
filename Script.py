@@ -25,16 +25,16 @@ class script(object):
 🔸 ɴᴏ ʀᴇғᴜɴᴅs ᴡɪʟʟ ʙᴇ ɪssᴜᴇᴅ ᴀғᴛᴇʀ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴛɪᴠᴀᴛɪᴏɴ.</blockquote>
 
 <b>🆘 sᴜᴘᴘᴏʀᴛ & ᴄᴏɴᴛᴀᴄᴛs:</b>
-🔹 Hum fast, safe aur reliable service dene ke liye pratibaddh hain.  
-🔹 ᴄᴏɴᴛᴀᴄᴛ ᴀᴅᴍɪɴ: <b>@premiumuseronly_Bot</b>  
-🔹 sᴜᴘᴘᴏʀᴛ ᴄʜᴀɴɴᴇʟ: <b>@premiumuseronly_Bot</b>"""
+🔹 ᴡᴇ ᴀʀᴇ ᴄᴏᴍᴍɪᴛᴛᴇᴅ ᴛᴏ ғᴀsᴛ, sᴀғᴇ & ʀᴇʟɪᴀʙʟᴇ sᴇʀᴠɪᴄᴇ.  
+🔹 ᴄᴏɴᴛᴀᴄᴛ ᴀᴅᴍɪɴ: <b>@XP_Owner_BoT</b>  
+🔹 sᴜᴘᴘᴏʀᴛ ᴄʜᴀɴɴᴇʟ: <b>@TenxHubSupport</b>"""
 
     ABOUT_TXT = """<b>╔═══❰  {}  ❱═══❍
 ║╭━━━━━━━━━━━━━━━➣
 ║┣⪼🤖 ᴍʏ ɴᴀᴍᴇ : {}
-║┣⪼👑 ᴏᴡɴᴇʀ : <a href='https://t.me/premiumuseronly_Bot'>xᴘ ᴏᴡɴᴇʀ</a>
-║┣⪼👦 ᴅᴇᴠᴇʟᴏᴘᴇʀ : <a href='https://t.me/premiumuseronly_Bot'>ᴀᴍᴀɴ ᴅᴇᴠᴇʟᴏᴘᴇʀ</a>
-║┣⪼❣️ ᴜᴘᴅᴀᴛᴇ : <a href='https://t.me/+oHB7vpOIXdszOWVl'>xᴘ ʙᴏᴛᴢ</a>
+║┣⪼👑 ᴏᴡɴᴇʀ : <a href='https://t.me/XP_Owner_BoT'>xᴘ ᴏᴡɴᴇʀ</a>
+║┣⪼👦 ᴅᴇᴠᴇʟᴏᴘᴇʀ : <a href='https://t.me/BOT_OWNER26'>ᴀᴍᴀɴ ᴅᴇᴠᴇʟᴏᴘᴇʀ</a>
+║┣⪼❣️ ᴜᴘᴅᴀᴛᴇ : <a href='https://t.me/TenxHubBackup'>xᴘ ʙᴏᴛᴢ</a>
 ║┣⪼📡 ʜᴏsᴛᴇᴅ ᴏɴ : ᴋᴏʏᴇʙ 
 ║┣⪼🗣️ ʟᴀɴɢᴜᴀɢᴇ : ᴘʏᴛʜᴏɴ 3
 ║┣⪼📚 ʟɪʙʀᴀʀʏ : ᴘʏʀᴏɢʀᴀᴍ
@@ -51,24 +51,24 @@ class script(object):
 ❏ ₹𝟷𝟿𝟿 ➠ 𝟼 ᴍᴏɴᴛʜs
 ❏ ₹𝟹𝟼𝟶 ➠ 𝟷𝟸 ᴍᴏɴᴛʜs</i> <b>(ʙᴇsᴛ ᴠᴀʟᴜᴇ)</b>
 
-<b>⚠️ Payment ke baad screenshot bhejein:</b>  
-<i>📸 Verification ke liye apna payment screenshot bhejein.</i>
+<b>⚠️ ᴀғᴛᴇʀ ᴘᴀʏᴍᴇɴᴛ:</b>  
+<i>📸 sᴇɴᴅ ʏᴏᴜʀ ᴘᴀʏᴍᴇɴᴛ sᴄʀᴇᴇɴsʜᴏᴛ ғᴏʀ ᴠᴇʀɪғɪᴄᴀᴛɪᴏɴ.</i>
 
-<b><u>👇 Neeche diye gaye buttons se apna plan choose karein.</u></b>"""
+<b><u>👇 ᴄʜᴏᴏsᴇ ʏᴏᴜʀ ᴘʟᴀɴ ғʀᴏᴍ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ.</u></b>"""
 
     SCAN_TXT = """<b>🧾 ᴘᴀʏᴍᴇɴᴛ ᴅᴇᴛᴀɪʟs:</b>
 
-• QR code scan karke payment karein <b>₹{}</b>  
+• sᴄᴀɴ ᴛʜᴇ ǫʀ ᴄᴏᴅᴇ ᴀɴᴅ ᴘᴀʏ <b>₹{}</b>  
 • ᴘᴀʏ ᴛʏᴘᴇ: <b>{}</b>
 • ᴘʀᴇᴍɪᴜᴍ ᴛɪᴍᴇ: <b>{}</b>
 • ǫʀ ᴄᴏᴅᴇ ᴠᴀʟɪᴅ ғᴏʀ <b>5 ᴍɪɴᴜᴛᴇs</b>
 
 <blockquote><b>⚠️ ᴀғᴛᴇʀ ᴘᴀʏᴍᴇɴᴛ:</b>
-📸 • Payment ke baad screenshot bhejein </blockquote>"""
+📸 • sᴇɴᴅ ᴛʜᴇ ᴘᴀʏᴍᴇɴᴛ sᴄʀᴇᴇɴsʜᴏᴛ ʜᴇʀᴇ </blockquote>"""
     
     AUTH_TXT = """<b>👋 ʜᴇʟʟᴏ {} !
 
-⚠️ Mujhe use karne ke liye kripya hamare updates channel ko join karein !
+⚠️ ᴘʟᴇᴀsᴇ ᴊᴏɪɴ ᴏᴜʀ ᴜᴘᴅᴀᴛᴇs ᴄʜᴀɴɴᴇʟ ᴛᴏ ᴜsᴇ ᴍᴇ !
 
-Server overload ke karan sirf hamare channel ke subscribers hi is bot ko use kar sakte hain !</b>"""
+ᴅᴜᴇ ᴛᴏ sᴇʀᴠᴇʀ ᴏᴠᴇʀʟᴏᴀᴅ, ᴏɴʟʏ ᴏᴜʀ ᴄʜᴀɴɴᴇʟ sᴜʙsᴄʀɪʙᴇʀs ᴄᴀɴ ᴜsᴇ ᴛʜɪs ʙᴏᴛ !</b>"""
     

@@ -16,8 +16,8 @@ class temp(object):
     USERS_CANCEL = False  
 
 FIXED_PRICES = [15, 39, 75, 110, 199, 360]
-UPI_ID = "premiumuseronly@ibl"
-NAME = "SekhSarif"
+UPI_ID = "pay.to.prajwal@ybl"
+NAME = "prajwal"
 CURRENCY = "INR"
 
 MOVIE_PRICES = [15, 39, 75, 110, 199, 360]
@@ -162,9 +162,9 @@ async def payment_timer_task(client, user_id, chat_id, amount, pay_type, photo_i
         await client.send_message(
             chat_id=chat_id,
             text=(
-                "⏳ <b>Payment ka samay expire ho gaya hai!</b>\n\n"
-                "Aapka 5 minute ka payment window close ho chuka hai, kripya dubara try karein. "
-                "Agar aap phir se try karna chahte hain, to neeche Restart par click karein."
+                "⏳ <b>ᴘᴀʏᴍᴇɴᴛ ᴛɪᴍᴇ ᴇxᴘɪʀᴇᴅ!</b>\n\n"
+                "ʏᴏᴜʀ 5-ᴍɪɴᴜᴛᴇ ᴘᴀʏᴍᴇɴᴛ ᴡɪɴᴅᴏᴡ ʜᴀs ʙᴇᴇɴ ᴄʟᴏsᴇᴅ. "
+                "ɪғ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴛʀʏ ᴀɢᴀɪɴ, ᴄʟɪᴄᴋ ʀᴇsᴛᴀʀᴛ ʙᴇʟᴏᴡ."
             ),
             reply_markup=InlineKeyboardMarkup(buttons),
             parse_mode=enums.ParseMode.HTML
