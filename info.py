@@ -36,7 +36,7 @@ DB_URL = environ.get('DATABASE_URI', "mongodb+srv://wajsarif461_db_user:TwacJh76
 DB_NAME = environ.get('DATABASE_NAME', "testing")
 
 CHANNEL = environ.get("CHANNEL", "https://t.me/MovieSearchAutoGroup")
-SUPPORT = environ.get("SUPPORT", "https://t.me/TenxHubSupport")
+SUPPORT = environ.get("SUPPORT", "https://t.me/payment_prime")
 
 AUTH_CHANNEL = list(map(int, environ.get("AUTH_CHANNEL", "-1002641663814").split()))
 AUTH_REQ_CHANNEL = list(map(int, environ.get("AUTH_REQ_CHANNELS", "-1002314687215").split()))
