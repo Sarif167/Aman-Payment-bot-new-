@@ -3,9 +3,9 @@ from os import environ
 def str_to_bool(val):
     return str(val).lower() in {"true", "yes", "1", "t", "y"}
 
-API_ID = int(environ.get('API_ID', '28690893'))
-API_HASH = environ.get('API_HASH', 'c214f988aa1ac0b998ace0b7cd0e215f')
-BOT_TOKEN = environ.get("BOT_TOKEN", "8466524261:AAGmiCJZnKbrBbwUGrIaUQRIH813CExKZpo")
+API_ID = int(environ.get('API_ID', '23621595'))
+API_HASH = environ.get('API_HASH', 'de904be2b4cd4efe2ea728ded17ca77d')
+BOT_TOKEN = environ.get("BOT_TOKEN", "")
 PORT = environ.get("PORT", "8000")
 
 START_PIC = environ.get("START_PIC", "https://files.catbox.moe/nylx2a.jpg")
