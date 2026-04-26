@@ -31,10 +31,11 @@ CHANNEL_LINK_MOV = int(environ.get("MOVIE_LINK_ID", "-1001551886347"))
 MOVIE_CHANNEL = int(environ.get("MOVIE_POST_ID", "-1001551886347"))
 INSTA_CHANNEL = int(environ.get("INSTA_POST_ID", "-1002259803190"))
 
-DB_URL = environ.get('DATABASE_URI', "mongodb+srv://testing1:avbotz@testing.kwuyv1a.mongodb.net/?appName=testing")
+DB_URL = environ.get('DATABASE_URI', "mongodb+srv://wajsarif461_db_user:TwacJh76mwpHHpjw@cluster0.biueyst.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+")
 DB_NAME = environ.get('DATABASE_NAME', "testing")
 
-CHANNEL = environ.get("CHANNEL", "https://t.me/TenxHubBackup")
+CHANNEL = environ.get("CHANNEL", "https://t.me/MovieSearchAutoGroup")
 SUPPORT = environ.get("SUPPORT", "https://t.me/TenxHubSupport")
 
 AUTH_CHANNEL = list(map(int, environ.get("AUTH_CHANNEL", "-1002641663814").split()))
