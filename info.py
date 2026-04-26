@@ -23,13 +23,13 @@ LOG_CHANNEL = int(environ.get("LOG_CHANNEL", "-1003184409377"))
 SCREENSHOT = int(environ.get("SCREENSHOT_CHANNEL", "-1002813745328"))
 
 #add premium channel 
-CHANNEL_LINK_INST = int(environ.get("INSTA_LINK_ID", "-1002114619001"))
+CHANNEL_LINK_INST = int(environ.get("INSTA_LINK_ID", "-1002259803190"))
 CHANNEL_LINK_MOV = int(environ.get("MOVIE_LINK_ID", "-1001551886347"))
 
 
 #post channel 
 MOVIE_CHANNEL = int(environ.get("MOVIE_POST_ID", "-1001551886347"))
-INSTA_CHANNEL = int(environ.get("INSTA_POST_ID", "-1002114619001"))
+INSTA_CHANNEL = int(environ.get("INSTA_POST_ID", "-1002259803190"))
 
 DB_URL = environ.get('DATABASE_URI', "mongodb+srv://testing1:avbotz@testing.kwuyv1a.mongodb.net/?appName=testing")
 DB_NAME = environ.get('DATABASE_NAME', "testing")
